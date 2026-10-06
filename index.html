@@ -1,56 +1,10 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#0b0e13">
-  <meta name="description" content="Lumière is a premium public-domain ebook library experience.">
-  <title>Lumière | Free Ebook Library</title>
-  <link rel="manifest" href="manifest.webmanifest">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-<a class="skip" href="#collection">Skip to collection</a>
-<div id="app">
-  <header class="nav"><div class="nav-inner">
-    <button class="brand" id="brandBtn"><span class="brand-mark">◫</span><span><b>Lumière</b><small>FREE LIBRARY</small></span></button>
-    <nav class="nav-links" aria-label="Main navigation"><button data-view="discover" class="active">Discover</button><button data-view="browse">Browse</button><button data-view="saved">My Library <span id="savedCount">0</span></button></nav>
-    <div class="nav-actions"><button class="icon-btn" id="themeBtn" aria-label="Toggle theme">☀</button><button class="join-btn" id="installBtn">Install app</button><button class="icon-btn mobile-only" id="menuBtn" aria-label="Open menu">☰</button></div>
-  </div><div class="mobile-menu" id="mobileMenu"><button data-view="discover">Discover</button><button data-view="browse">Browse</button><button data-view="saved">My Library</button></div></header>
-
-  <main>
-    <section class="hero" id="hero"><div class="orb orb-a"></div><div class="orb orb-b"></div><div class="hero-inner">
-      <div class="hero-copy reveal"><span class="eyebrow">✦ KNOWLEDGE SHOULD BE FREE</span><h1>Timeless stories.<br><em>Yours to discover.</em></h1><p>Explore a beautifully curated collection of public-domain classics. Read online, save favorites, and build a library that travels with you.</p>
-        <form class="hero-search" id="searchForm"><span>⌕</span><input id="searchInput" type="search" placeholder="Search title, author, or genre..." autocomplete="off"><button>Explore</button></form>
-        <div class="trust"><span>✓ Always free</span><span>✓ No ads</span><span>✓ Read anywhere</span></div>
-      </div>
-      <div class="hero-art reveal" aria-hidden="true"><div class="book-stack" id="heroBooks"></div><span class="catalog-pill">8,000+ curated titles</span></div>
-    </div></section>
-
-    <section class="collection" id="collection"><div class="section-head"><div><span class="kicker">CURATED COLLECTION</span><h2>Books worth keeping</h2><p>Hand-picked classics, beautifully presented.</p></div><label class="sort">☷ <select id="sortSelect"><option value="popular">Popular</option><option value="rating">Rating</option><option value="newest">Newest</option><option value="title">Title</option></select></label></div>
-      <div class="library-tools"><button id="globalEpubBtn">＋ Open your EPUB</button><input id="globalEpubInput" type="file" accept=".epub,application/epub+zip" hidden></div><div class="category-row" id="categories"></div><div class="results-line"><span id="resultCount"></span><button id="clearBtn">Clear filters</button></div><div class="grid" id="bookGrid"></div>
-      <div class="empty" id="emptyState"><div>⌕</div><h3>No books found</h3><p>Try a different title, author, or category.</p><button id="emptyClear">Clear filters</button></div>
-    </section>
-
-    <section class="features"><div class="feature"><i>▤</i><div><h3>Read beautifully</h3><p>A calm, focused reader with adjustable type and comfortable spacing.</p></div></div><div class="feature"><i>♡</i><div><h3>Keep your place</h3><p>Favorites and progress are stored privately in your browser.</p></div></div><div class="feature"><i>⇩</i><div><h3>Take books anywhere</h3><p>Install the library as an app and continue browsing offline.</p></div></div></section>
-  </main>
-  <footer><span class="footer-brand">◫ Lumière</span><p>Premium demo catalog featuring public-domain literature.</p><div><a href="#collection">Browse</a><button id="aboutBtn">About</button><button id="helpBtn">Help</button></div></footer>
-</div>
-
-<div class="modal-wrap" id="detailsModal" aria-hidden="true"><div class="backdrop" data-close="details"></div><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="modal-close" data-close="details" aria-label="Close">×</button><div id="modalContent"></div></div></div>
-<div class="reader" id="reader" aria-hidden="true">
-  <header><button id="readerBack">‹ Library</button><strong id="readerBookTitle"></strong><div class="type-controls"><button id="fontMinus">−</button><span>Aa</span><button id="fontPlus">+</button></div></header>
-  <section class="reader-stage">
-    <div id="textReaderPane"><article><span>COMPLETE EDITION</span><h2 id="readerHeading">Book</h2><hr><div id="readerText" class="reader-text"></div></article></div>
-    <div id="epubReaderPane" style="display:none"><div id="epubViewer"></div></div>
-  </section>
-  <footer class="reader-nav fixed-reader-nav" id="readerNav"><button id="prevChapter" disabled>‹ Previous</button><small id="pageText"></small><button id="nextChapter">Next ›</button></footer>
-</div>
-<div class="toast" id="toast" role="status">✓ <span></span></div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script>
-<script src="app.js"></script>
-</body></html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#0b0e13"><title>Lumière | Gutenberg Library</title><meta name="description" content="Search and read free Project Gutenberg EPUB books inside Lumière."><link rel="manifest" href="manifest.webmanifest"><link rel="stylesheet" href="styles.css"></head><body>
+<header class="top"><button id="home" class="brand"><span>◫</span><b>Lumière<small>GUTENBERG LIBRARY</small></b></button><nav><button data-view="discover" class="active">Discover</button><button data-view="saved">My Library <i id="savedCount">0</i></button></nav><div><button id="theme" class="icon">☀</button><button id="install" class="install">Install app</button></div></header>
+<main><section class="hero"><div class="halo h1"></div><div class="halo h2"></div><div><span class="eyebrow">✦ FREE PUBLIC-DOMAIN EPUBS</span><h1>Find a classic.<br><em>Read it here.</em></h1><p>Search the bundled collection instantly, or search Project Gutenberg's official OPDS catalog. Every compatible EPUB opens inside Lumière.</p><form id="searchForm"><span>⌕</span><input id="search" placeholder="Search by title, author, subject, or Gutenberg ID" autocomplete="off"><button>Search</button></form><div class="trust"><span>✓ No API key</span><span>✓ In-app EPUB reader</span><span>✓ Saved reading position</span></div></div><div class="hero-stack" id="heroStack"></div></section>
+<section id="collection" class="collection"><div class="heading"><div><span class="eyebrow">SEARCHABLE LIBRARY</span><h2>Free ebooks, ready to read</h2><p id="status">Loading the local catalog…</p></div><div class="controls"><select id="category"><option>All</option></select><select id="sort"><option value="relevance">Relevance</option><option value="title">Title</option><option value="author">Author</option></select><button id="upload">＋ Open EPUB</button><input id="file" type="file" accept=".epub,application/epub+zip" hidden></div></div><div id="sourceNotice" class="notice">Bundled catalog ready. Online Gutenberg search is used only when you search.</div><div id="grid" class="grid"></div><div id="empty" class="empty" hidden><b>No matches yet</b><p>Try a title, author, or a broader keyword.</p></div><div class="pager" id="pager" hidden><button id="prevSearch">‹ Previous results</button><span id="pageLabel"></span><button id="nextSearch">Next results ›</button></div></section>
+<section class="features"><article><i>⌕</i><div><h3>Reliable search</h3><p>Local catalog first, official Gutenberg OPDS second.</p></div></article><article><i>▤</i><div><h3>Read in Lumière</h3><p>EPUB pagination, typography, chapters, and progress.</p></div></article><article><i>♡</i><div><h3>Keep your place</h3><p>Favorites and reading position stay in your browser.</p></div></article></section></main>
+<footer><b>◫ Lumière</b><span>Free ebook interface for public-domain titles</span><span>Rights can vary by location.</span></footer>
+<div id="modal" class="modal-wrap"><div class="shade" data-close></div><section class="modal"><button class="close" data-close>×</button><div id="modalBody"></div></section></div>
+<section id="reader" class="reader"><header><button id="back">‹ Library</button><strong id="readerTitle"></strong><div><button id="smaller">A−</button><button id="larger">A+</button></div></header><div id="viewer"></div><footer><button id="prev">‹ Previous</button><span id="location">EPUB reader</span><button id="next">Next ›</button></footer></section>
+<div id="toast" class="toast"><span></span></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script><script src="https://cdn.jsdelivr.net/npm/epubjs@0.3.93/dist/epub.min.js"></script><script src="core.js"></script><script src="app.js"></script></body></html>

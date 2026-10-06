@@ -1,17 +1,1 @@
-{
-  "name": "Lumi\u00e8re Free Ebook Library",
-  "short_name": "Lumi\u00e8re",
-  "description": "A premium public-domain ebook library.",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#0b0e13",
-  "theme_color": "#0b0e13",
-  "icons": [
-    {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
-  ]
-}
+{"name": "Lumi\u00e8re Gutenberg Library", "short_name": "Lumi\u00e8re", "start_url": "./", "display": "standalone", "background_color": "#0b0e13", "theme_color": "#0b0e13", "icons": [{"src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}]}
