@@ -1,4 +1,4 @@
-const CACHE = 'lumiere-v6';
+const CACHE = 'lumiere-v7';
 const ASSETS = ['./', './index.html', './styles.css', './app.js', './manifest.webmanifest', './icon.svg'];
 
 self.addEventListener('install', event => {
@@ -11,7 +11,7 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
   const path = new URL(event.request.url).pathname;
-  if (path.startsWith('/openlibrary/') || path.startsWith('/gutenberg/')) return;
+  if (path.startsWith('/openlibrary/')) return;
   event.respondWith(
     caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
       const copy = response.clone();

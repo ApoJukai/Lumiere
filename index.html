@@ -31,7 +31,7 @@
     </div></section>
 
     <section class="collection" id="collection"><div class="section-head"><div><span class="kicker">CURATED COLLECTION</span><h2>Books worth keeping</h2><p>Hand-picked classics, beautifully presented.</p></div><label class="sort">☷ <select id="sortSelect"><option value="popular">Popular</option><option value="rating">Rating</option><option value="newest">Newest</option><option value="title">Title</option></select></label></div>
-      <div class="category-row" id="categories"></div><div class="results-line"><span id="resultCount"></span><button id="clearBtn">Clear filters</button></div><div class="grid" id="bookGrid"></div>
+      <div class="library-tools"><button id="globalEpubBtn">＋ Open your EPUB</button><input id="globalEpubInput" type="file" accept=".epub,application/epub+zip" hidden></div><div class="category-row" id="categories"></div><div class="results-line"><span id="resultCount"></span><button id="clearBtn">Clear filters</button></div><div class="grid" id="bookGrid"></div>
       <div class="empty" id="emptyState"><div>⌕</div><h3>No books found</h3><p>Try a different title, author, or category.</p><button id="emptyClear">Clear filters</button></div>
     </section>
 
@@ -46,10 +46,8 @@
   <section class="reader-stage">
     <div id="textReaderPane"><article><span>COMPLETE EDITION</span><h2 id="readerHeading">Book</h2><hr><div id="readerText" class="reader-text"></div></article></div>
     <div id="epubReaderPane" style="display:none"><div id="epubViewer"></div></div>
-    <div id="embeddedReaderPane" style="display:none"><div class="embed-note" id="readerEmbedStatus"></div><iframe id="embeddedViewer" title="Embedded ebook reader" allow="fullscreen" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
   </section>
   <footer class="reader-nav fixed-reader-nav" id="readerNav"><button id="prevChapter" disabled>‹ Previous</button><small id="pageText"></small><button id="nextChapter">Next ›</button></footer>
-  <a id="readerExternalFallback" class="reader-fallback" href="#" target="_blank" rel="noopener" style="display:none">Open source reader only if the embedded edition is unavailable</a>
 </div>
 <div class="toast" id="toast" role="status">✓ <span></span></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>

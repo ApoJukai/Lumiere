@@ -64,3 +64,7 @@ Search now combines instant local matching with Open Library online discovery. R
 - Internet Archive books open inside a full-screen embedded BookReader iframe.
 - Text remains an automatic fallback if EPUB rendering fails.
 - External navigation is only exposed as a fallback for publishers that prohibit iframe embedding.
+
+## Version 7 Open Library-only mode
+
+All online search and metadata now come only from the Open Library API. Archive.org and Project Gutenberg content URLs and proxies have been removed. Because Open Library's API does not deliver EPUB file bytes, online records are catalog entries inside the app. Users can upload a DRM-free EPUB they legally possess and read it in Lumière using the embedded EPUB reader.

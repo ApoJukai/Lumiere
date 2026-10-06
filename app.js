@@ -1,13 +1,5 @@
 const CURATED_BOOKS = [{"id": 1, "title": "Pride and Prejudice", "author": "Jane Austen", "category": "Romance", "year": 1813, "rating": 4.8, "pages": 432, "format": "EPUB · PDF", "colors": ["#fb7185", "#a21caf"], "progress": 64, "description": "A witty and enduring story of manners, first impressions, and unexpected love in Regency England.", "quote": "There is no charm equal to tenderness of heart.", "initials": "P&P"}, {"id": 2, "title": "The Great Gatsby", "author": "F. Scott Fitzgerald", "category": "Classic", "year": 1925, "rating": 4.6, "pages": 208, "format": "EPUB · PDF", "colors": ["#06b6d4", "#172554"], "progress": 28, "description": "A glittering portrait of ambition, longing, and illusion during the Jazz Age.", "quote": "So we beat on, boats against the current.", "initials": "GG"}, {"id": 3, "title": "Frankenstein", "author": "Mary Shelley", "category": "Science Fiction", "year": 1818, "rating": 4.7, "pages": 280, "format": "EPUB · MOBI", "colors": ["#34d399", "#052e2b"], "progress": 0, "description": "A visionary tale of creation, responsibility, and the boundaries of human ambition.", "quote": "Beware; for I am fearless, and therefore powerful.", "initials": "FR"}, {"id": 4, "title": "The Adventures of Sherlock Holmes", "author": "Arthur Conan Doyle", "category": "Mystery", "year": 1892, "rating": 4.9, "pages": 307, "format": "EPUB · PDF", "colors": ["#fbbf24", "#292524"], "progress": 82, "description": "Twelve ingenious cases featuring the legendary detective and his trusted companion, Dr. Watson.", "quote": "There is nothing more deceptive than an obvious fact.", "initials": "SH"}, {"id": 5, "title": "The Picture of Dorian Gray", "author": "Oscar Wilde", "category": "Gothic", "year": 1890, "rating": 4.7, "pages": 254, "format": "EPUB · PDF", "colors": ["#a78bfa", "#18181b"], "progress": 0, "description": "A haunting meditation on beauty, influence, conscience, and a portrait that bears a terrible secret.", "quote": "To define is to limit.", "initials": "DG"}, {"id": 6, "title": "The Secret Garden", "author": "Frances Hodgson Burnett", "category": "Children", "year": 1911, "rating": 4.6, "pages": 331, "format": "EPUB · PDF", "colors": ["#84cc16", "#134e4a"], "progress": 15, "description": "A lonely child discovers friendship, hope, and renewal behind the locked door of a forgotten garden.", "quote": "If you look the right way, you can see that the whole world is a garden.", "initials": "SG"}, {"id": 7, "title": "Moby-Dick", "author": "Herman Melville", "category": "Adventure", "year": 1851, "rating": 4.5, "pages": 635, "format": "EPUB · MOBI", "colors": ["#38bdf8", "#172554"], "progress": 0, "description": "An epic voyage across the oceans and into the depths of obsession, fate, and the unknown.", "quote": "It is the image of the ungraspable phantom of life.", "initials": "MD"}, {"id": 8, "title": "Little Women", "author": "Louisa May Alcott", "category": "Coming of Age", "year": 1868, "rating": 4.8, "pages": 449, "format": "EPUB · PDF", "colors": ["#f472b6", "#881337"], "progress": 47, "description": "Four sisters grow through joy, hardship, creativity, and love in this warm family classic.", "quote": "I am not afraid of storms, for I am learning how to sail my ship.", "initials": "LW"}];
-const GUTENBERG_IDS = [1342, 64317, 84, 1661, 174, 17396, 2701, 514];
-const PALETTES = [['#fb7185','#701a75'],['#22d3ee','#172554'],['#34d399','#052e2b'],['#fbbf24','#292524'],['#a78bfa','#18181b'],['#84cc16','#134e4a']];
-CURATED_BOOKS.forEach((book,index)=>{
-  const id=GUTENBERG_IDS[index];
-  Object.assign(book,{source:'gutenberg',access:'download',accessLabel:'Complete free ebook',gutenbergId:id,
-    textUrl:`https://www.gutenberg.org/cache/epub/${id}/pg${id}.txt`,
-    htmlUrl:`https://www.gutenberg.org/cache/epub/${id}/pg${id}-images.html`,
-    epubUrl:`https://www.gutenberg.org/cache/epub/${id}/pg${id}-images.epub`,format:'EPUB · HTML · Text'})
-});
+CURATED_BOOKS.forEach(book=>Object.assign(book,{source:'openlibrary',access:'metadata',accessLabel:'Open Library record',format:'Catalog metadata',textUrl:null,htmlUrl:null,epubUrl:null,archiveId:null,readerUrl:null,workKey:null}));
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const state={query:'',category:'All',sort:'popular',view:'discover',saved:JSON.parse(localStorage.getItem('lumiere-saved')||'[1,4,8]'),progress:JSON.parse(localStorage.getItem('lumiere-progress')||'{}'),font:+localStorage.getItem('lumiere-font')||18,selected:null,online:[],page:1,total:0,loading:false,lastQuery:'',requestId:0};
 const categories=['All','Fiction','Adventure','Romance','Mystery','Science Fiction','Children','History','Poetry'];
@@ -16,8 +8,15 @@ function escapeHtml(v=''){return String(v).replace(/[&<>"]/g,c=>({'&':'&amp;','<
 function cover(b,extra=''){const colors=b.colors||PALETTES[Math.abs(String(b.id).split('').reduce((a,c)=>a+c.charCodeAt(0),0))%PALETTES.length];return `<div class="cover ${extra}" style="background:linear-gradient(145deg,${colors[0]},${colors[1]})">${b.coverUrl?`<img class="cover-image" src="${escapeHtml(b.coverUrl)}" alt="Cover of ${escapeHtml(b.title)}" loading="lazy">`:''}<div class="cover-inner ${b.coverUrl?'image-overlay':''}"><span class="cover-brand">LUMIÈRE LIBRARY</span><div><h3>${escapeHtml(b.title)}</h3><p>${escapeHtml(b.author)}</p></div><span class="monogram">${escapeHtml(b.initials||'BK')}</span></div></div>`}
 function toast(msg){const t=$('#toast');t.querySelector('span').textContent=msg;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>t.classList.remove('show'),2600)}
 function saveState(){localStorage.setItem('lumiere-saved',JSON.stringify(state.saved));localStorage.setItem('lumiere-progress',JSON.stringify(state.progress));$('#savedCount').textContent=state.saved.length}
-function accessInfo(d){if(d.public_scan_b===true)return {access:'public',label:'Free full text'};if(d.has_fulltext&&d.ia?.length)return {access:'readable',label:'Readable online'};if(d.ia?.length)return {access:'borrow',label:'Borrow or preview'};return {access:'metadata',label:'Catalog record'}}
-function mapOpenLibrary(d){const a=accessInfo(d),key=(d.key||'').replace('/works/',''),ia=d.ia?.[0],cover=d.cover_i?`https://covers.openlibrary.org/b/id/${d.cover_i}-L.jpg`:null,title=d.title||'Untitled',author=d.author_name?.[0]||'Unknown author';return {id:`ol-${key||d.edition_key?.[0]||Math.random()}`,title,author,category:d.subject?.[0]||'Book',year:d.first_publish_year||'Unknown',rating:d.ratings_average?Number(d.ratings_average).toFixed(1):'—',pages:d.number_of_pages_median||0,format:a.label,color:'',colors:PALETTES[(d.cover_i||title.length)%PALETTES.length],progress:0,description:d.first_sentence?.[0]||`Discover this title through Open Library.${d.has_fulltext?' A readable edition is listed as available.':''}`,quote:d.edition_count?`${d.edition_count} editions indexed by Open Library.`:'Indexed by Open Library.',initials:title.split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase(),coverUrl:cover,source:'openlibrary',access:a.access,accessLabel:a.label,workKey:key,archiveId:ia,readerUrl:ia?`https://archive.org/embed/${ia}`:`https://openlibrary.org${d.key||''}`,languages:d.language||[]}}
+function accessInfo(d){
+  if(d.public_scan_b===true)return {access:'public',label:'Full text listed by Open Library'};
+  if(d.has_fulltext===true)return {access:'readable',label:'Readable edition listed'};
+  return {access:'metadata',label:'Open Library record'}
+}
+function mapOpenLibrary(d){
+  const a=accessInfo(d),key=(d.key||'').replace('/works/',''),cover=d.cover_i?`https://covers.openlibrary.org/b/id/${d.cover_i}-L.jpg`:null,title=d.title||'Untitled',author=d.author_name?.[0]||'Unknown author';
+  return {id:`ol-${key||d.edition_key?.[0]||Math.random()}`,title,author,category:d.subject?.[0]||'Book',year:d.first_publish_year||'Unknown',rating:d.ratings_average?Number(d.ratings_average).toFixed(1):'—',pages:d.number_of_pages_median||0,format:a.label,colors:PALETTES[(d.cover_i||title.length)%PALETTES.length],progress:0,description:d.first_sentence?.[0]||'A bibliographic record from Open Library.',quote:d.edition_count?`${d.edition_count} editions indexed by Open Library.`:'Indexed by Open Library.',initials:title.split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase(),coverUrl:cover,source:'openlibrary',access:a.access,accessLabel:a.label,workKey:key,editionKey:d.edition_key?.[0]||null,languages:d.language||[]}
+}
 function localMatches(){const q=state.query.toLowerCase().trim();return CURATED_BOOKS.filter(b=>{const hit=!q||`${b.title} ${b.author} ${b.category}`.toLowerCase().includes(q);return hit&&(state.category==='All'||`${b.category}`.toLowerCase().includes(state.category.toLowerCase()))})}
 function combinedResults(){const map=new Map();[...localMatches(),...state.online].forEach(b=>map.set(String(b.id),b));let list=[...map.values()];if(state.view==='saved')list=list.filter(b=>state.saved.includes(b.id));if(state.sort==='rating')list.sort((a,b)=>(+b.rating||0)-(+a.rating||0));if(state.sort==='newest')list.sort((a,b)=>(+b.year||0)-(+a.year||0));if(state.sort==='title')list.sort((a,b)=>a.title.localeCompare(b.title));return list}
 function renderCategories(){$('#categories').innerHTML=categories.map(c=>`<button class="${c===state.category?'active':''}" data-cat="${c}">${c}</button>`).join('');$$('#categories button').forEach(b=>b.onclick=()=>{state.category=b.dataset.cat;state.page=1;renderCategories();renderBooks();scheduleOnlineSearch(true)})}
@@ -28,11 +27,17 @@ function getBook(id){return [...CURATED_BOOKS,...state.online].find(b=>String(b.
 function toggleSave(id){const b=getBook(id),actual=b?.id??id;state.saved=state.saved.includes(actual)?state.saved.filter(x=>x!==actual):[...state.saved,actual];saveState();renderBooks();toast(state.saved.includes(actual)?'Saved to your library':'Removed from your library')}
 function cacheKey(){return `lumiere-ol-${state.query.toLowerCase().trim()||'discover'}-${state.category}-${state.page}`}
 async function fetchOnline(url){try{const r=await fetch(url);if(r.ok)return r}catch{}return fetch('/openlibrary/search.json'+url.split('/search.json')[1])}
-async function searchOnline(){if(state.view==='saved')return;const requestId=++state.requestId,q=state.query.trim()||'classic literature',terms=[q,state.category!=='All'?state.category:'', 'has_fulltext:true'].filter(Boolean).join(' '),fields='key,title,author_name,cover_i,first_publish_year,has_fulltext,public_scan_b,ia,edition_key,language,subject,edition_count,ratings_average,number_of_pages_median,first_sentence',url=`https://openlibrary.org/search.json?q=${encodeURIComponent(terms)}&fields=${encodeURIComponent(fields)}&page=${state.page}&limit=24&lang=en`;state.loading=true;renderSearchStatus(combinedResults().length);const key=cacheKey();try{const cached=JSON.parse(sessionStorage.getItem(key)||'null');if(cached&&Date.now()-cached.time<3600000){state.online=cached.books;state.total=cached.total;state.loading=false;renderBooks();return}const r=await fetchOnline(url);if(!r.ok)throw Error(r.status);const data=await r.json();if(requestId!==state.requestId)return;state.online=(data.docs||[]).map(mapOpenLibrary);state.total=data.num_found||0;sessionStorage.setItem(key,JSON.stringify({time:Date.now(),books:state.online,total:state.total}))}catch(e){if(requestId!==state.requestId)return;state.online=[];state.total=0;toast('Online search is unavailable. Local complete ebooks remain available.')}finally{if(requestId===state.requestId){state.loading=false;renderBooks()}}}
+async function searchOnline(){if(state.view==='saved')return;const requestId=++state.requestId,q=state.query.trim()||'classic literature',terms=[q,state.category!=='All'?state.category:'', 'has_fulltext:true'].filter(Boolean).join(' '),fields='key,title,author_name,cover_i,first_publish_year,has_fulltext,public_scan_b,edition_key,language,subject,edition_count,ratings_average,number_of_pages_median,first_sentence',url=`https://openlibrary.org/search.json?q=${encodeURIComponent(terms)}&fields=${encodeURIComponent(fields)}&page=${state.page}&limit=24&lang=en`;state.loading=true;renderSearchStatus(combinedResults().length);const key=cacheKey();try{const cached=JSON.parse(sessionStorage.getItem(key)||'null');if(cached&&Date.now()-cached.time<3600000){state.online=cached.books;state.total=cached.total;state.loading=false;renderBooks();return}const r=await fetchOnline(url);if(!r.ok)throw Error(r.status);const data=await r.json();if(requestId!==state.requestId)return;state.online=(data.docs||[]).map(mapOpenLibrary);state.total=data.num_found||0;sessionStorage.setItem(key,JSON.stringify({time:Date.now(),books:state.online,total:state.total}))}catch(e){if(requestId!==state.requestId)return;state.online=[];state.total=0;toast('Online search is unavailable. Local complete ebooks remain available.')}finally{if(requestId===state.requestId){state.loading=false;renderBooks()}}}
 function scheduleOnlineSearch(immediate=false){clearTimeout(searchTimer);searchTimer=setTimeout(searchOnline,immediate?0:700)}
-function openDetails(id){const b=getBook(id);if(!b)return;state.selected=b;const action=b.source==='gutenberg'?'Read complete ebook':b.access==='metadata'?'View catalog record':'Open online reader';$('#modalContent').innerHTML=`<div class="detail-grid">${cover(b)}<div class="detail-copy"><span class="kicker">${escapeHtml(b.accessLabel)} · ${escapeHtml(b.year)}</span><h2 id="modalTitle">${escapeHtml(b.title)}</h2><span class="author">by ${escapeHtml(b.author)}</span><div class="stats"><span>${b.rating==='—'?'No rating':`★ ${b.rating}`}</span><span>${b.pages?`▤ ${b.pages} pages`:'Multiple editions'}</span><span>${b.source==='gutenberg'?'Project Gutenberg':'Open Library'}</span></div><p class="desc">${escapeHtml(b.description)}</p><blockquote>“${escapeHtml(b.quote)}”</blockquote><div class="detail-actions"><button class="primary" id="readNow">▤ ${action}</button><button class="secondary" id="modalSave">${state.saved.includes(b.id)?'♥':'♡'}</button>${b.epubUrl?'<button class="secondary" id="downloadBtn">⇩</button>':''}</div><p class="format-note">${escapeHtml(b.format)} · Availability can vary by edition and location.</p></div></div>`;$('#detailsModal').classList.add('open');document.body.style.overflow='hidden';$('#readNow').onclick=()=>openUniversalReader(b);$('#modalSave').onclick=()=>{toggleSave(b.id);openDetails(b.id)};$('#downloadBtn')?.addEventListener('click',()=>window.open(b.epubUrl,'_blank','noopener'))}
+function openDetails(id){
+  const b=getBook(id);if(!b)return;state.selected=b;
+  $('#modalContent').innerHTML=`<div class="detail-grid">${cover(b)}<div class="detail-copy"><span class="kicker">${escapeHtml(b.accessLabel)} · ${escapeHtml(b.year)}</span><h2 id="modalTitle">${escapeHtml(b.title)}</h2><span class="author">by ${escapeHtml(b.author)}</span><div class="stats"><span>${b.rating==='—'?'No rating':`★ ${b.rating}`}</span><span>${b.pages?`▤ ${b.pages} pages`:'Multiple editions'}</span><span>Open Library API</span></div><p class="desc">${escapeHtml(b.description)}</p><blockquote>“${escapeHtml(b.quote)}”</blockquote><div class="ol-record-box"><strong>Open Library-only mode</strong><p>Open Library's public API provides catalog and availability metadata, but it does not return an EPUB file for this record. Upload an EPUB you legally possess to read it inside Lumière.</p></div><div class="detail-actions"><button class="primary" id="uploadEpubBtn">＋ Open local EPUB in Lumière</button><button class="secondary" id="modalSave">${state.saved.includes(b.id)?'♥':'♡'}</button></div><input id="epubFileInput" type="file" accept=".epub,application/epub+zip" hidden><p class="format-note">Search and metadata supplied only by Open Library. No Archive.org content is used.</p></div></div>`;
+  $('#detailsModal').classList.add('open');document.body.style.overflow='hidden';
+  $('#modalSave').onclick=()=>{toggleSave(b.id);openDetails(b.id)};
+  $('#uploadEpubBtn').onclick=()=>$('#epubFileInput').click();
+  $('#epubFileInput').onchange=e=>{const file=e.target.files?.[0];if(file)openLocalEpub(file,b)}
+}
 function closeDetails(){$('#detailsModal').classList.remove('open');document.body.style.overflow=''}
-function gutenbergProxy(url){try{const u=new URL(url);return u.hostname.endsWith('gutenberg.org')?'/gutenberg'+u.pathname+u.search:url}catch{return url}}
 function chunkText(text,max=5200){
   const clean=text.replace(/\r/g,'').replace(/[ \t]+\n/g,'\n').replace(/\n{4,}/g,'\n\n');
   const paras=clean.split(/\n\s*\n/).map(x=>x.trim()).filter(Boolean),pages=[];
@@ -48,56 +53,36 @@ function cleanReaderEngines(){
   try{epubBook?.destroy()}catch{}
   epubRendition=null;epubBook=null;
   $('#epubViewer').innerHTML='';
-  $('#embeddedViewer').src='about:blank';
+  if($('#embeddedViewer'))$('#embeddedViewer').src='about:blank';
 }
 function showReaderMode(mode){
   readerMode=mode;
   $('#textReaderPane').style.display=mode==='text'?'block':'none';
   $('#epubReaderPane').style.display=mode==='epub'?'block':'none';
-  $('#embeddedReaderPane').style.display=mode==='embed'?'block':'none';
+  if($('#embeddedReaderPane'))$('#embeddedReaderPane').style.display='none';
   $('#readerNav').style.display=mode==='embed'?'none':'flex';
-  $('#readerExternalFallback').style.display=mode==='embed'?'flex':'none';
+  if($('#readerExternalFallback'))$('#readerExternalFallback').style.display='none';
 }
-async function openUniversalReader(b){
-  closeDetails();cleanReaderEngines();state.selected=b;
-  $('#readerBookTitle').textContent=b.title;$('#readerHeading').textContent=b.title;
-  $('#reader').classList.add('open');document.body.style.overflow='hidden';
-  $('#readerExternalFallback').href=b.readerUrl||b.htmlUrl||'#';
-  if(b.source==='gutenberg'&&b.epubUrl&&window.ePub){
-    showReaderMode('epub');
-    $('#epubViewer').innerHTML='<div class="reader-loading">Loading EPUB edition…</div>';
-    try{
-      const source=gutenbergProxy(b.epubUrl);
-      epubBook=window.ePub(source,{openAs:'epub'});
-      epubRendition=epubBook.renderTo('epubViewer',{width:'100%',height:'100%',spread:'auto',flow:'paginated'});
-      const saved=localStorage.getItem(`lumiere-epub-cfi-${b.id}`);
-      await epubRendition.display(saved||undefined);
-      epubRendition.themes.default({body:{'font-family':'Georgia, serif','line-height':'1.7',padding:'0 4%'}});
-      epubRendition.on('relocated',location=>{
-        if(location?.start?.cfi)localStorage.setItem(`lumiere-epub-cfi-${b.id}`,location.start.cfi);
-        const pct=location?.start?.percentage?Math.round(location.start.percentage*100):0;
-        if(pct){state.progress[b.id]=pct;saveState()}
-        $('#pageText').textContent=pct?`${pct}% complete`:'EPUB reader';
-      });
-      $('#prevChapter').disabled=false;$('#nextChapter').disabled=false;
-    }catch(error){toast('EPUB could not load. Opening the text edition.');showReaderMode('text');loadBookText(b)}
-    return;
-  }
-  if(b.source==='gutenberg'){showReaderMode('text');loadBookText(b);return}
-  if(b.archiveId){
-    showReaderMode('embed');
-    $('#embeddedViewer').src=`https://archive.org/embed/${encodeURIComponent(b.archiveId)}`;
-    $('#readerEmbedStatus').textContent=b.access==='borrow'?'Sign in may be required to borrow this edition.':'The readable edition is embedded inside Lumière.';
-    return;
-  }
-  showReaderMode('embed');
-  $('#embeddedViewer').src=b.readerUrl||`https://openlibrary.org/${b.workKey||''}`;
-  $('#readerEmbedStatus').textContent='This catalog page may restrict embedding. Use the fallback button only if it does not display.';
+async function openLocalEpub(file,metadata={}){
+  closeDetails();cleanReaderEngines();state.selected={...metadata,id:`local-${file.name}`,title:metadata.title||file.name.replace(/\.epub$/i,''),source:'local'};
+  $('#readerBookTitle').textContent=state.selected.title;$('#readerHeading').textContent=state.selected.title;
+  $('#reader').classList.add('open');document.body.style.overflow='hidden';showReaderMode('epub');
+  $('#epubViewer').innerHTML='<div class="reader-loading">Opening local EPUB…</div>';
+  try{
+    const buffer=await file.arrayBuffer();
+    epubBook=window.ePub(buffer,{openAs:'epub'});
+    epubRendition=epubBook.renderTo('epubViewer',{width:'100%',height:'100%',spread:'auto',flow:'paginated'});
+    await epubRendition.display();
+    epubRendition.themes.default({body:{'font-family':'Georgia, serif','line-height':'1.7',padding:'0 4%'}});
+    epubRendition.on('relocated',location=>{$('#pageText').textContent=location?.start?.percentage?`${Math.round(location.start.percentage*100)}% complete`:'Local EPUB'});
+    $('#prevChapter').disabled=false;$('#nextChapter').disabled=false;
+  }catch(error){$('#epubViewer').innerHTML='<div class="reader-loading">This EPUB could not be opened. Please verify that the file is a valid, DRM-free EPUB.</div>';toast('Unable to open this EPUB file.')}
 }
-function openReader(b){openUniversalReader(b)}
+async function openUniversalReader(b){openDetails(b.id)}
+function openReader(b){openDetails(b.id)}
 function closeReader(){cleanReaderEngines();$('#reader').classList.remove('open');document.body.style.overflow='';renderBooks()}
 function reset(){state.query='';state.category='All';state.page=1;state.view='discover';$('#searchInput').value='';renderCategories();renderBooks();scheduleOnlineSearch(true)}
 function setView(v){state.view=v;$$('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===v));$('#mobileMenu').classList.remove('open');if(v!=='saved')scheduleOnlineSearch(true);renderBooks();$('#collection').scrollIntoView({behavior:'smooth'})}
 $('#heroBooks').innerHTML=cover(CURATED_BOOKS[1],'hero-cover')+cover(CURATED_BOOKS[0],'hero-cover left')+cover(CURATED_BOOKS[2],'hero-cover right');
 $('#searchForm').onsubmit=e=>{e.preventDefault();state.query=$('#searchInput').value.trim();state.page=1;state.view='browse';renderBooks();scheduleOnlineSearch(true);$('#collection').scrollIntoView({behavior:'smooth'})};$('#searchInput').oninput=e=>{state.query=e.target.value;state.page=1;renderBooks();scheduleOnlineSearch()};$('#sortSelect').onchange=e=>{state.sort=e.target.value.toLowerCase();renderBooks()};$('#clearBtn').onclick=$('#emptyClear').onclick=reset;$('#brandBtn').onclick=()=>window.scrollTo({top:0,behavior:'smooth'});$$('[data-view]').forEach(x=>x.onclick=()=>setView(x.dataset.view));$('#menuBtn').onclick=()=>$('#mobileMenu').classList.toggle('open');$$('[data-close]').forEach(x=>x.onclick=closeDetails);$('#readerBack').onclick=closeReader;$('#fontMinus').onclick=()=>setFont(-2);$('#fontPlus').onclick=()=>setFont(2);function setFont(n){state.font=Math.max(14,Math.min(28,state.font+n));localStorage.setItem('lumiere-font',state.font);$('#readerText').style.fontSize=state.font+'px'}$('#prevChapter').onclick=()=>{if(readerMode==='epub'&&epubRendition){epubRendition.prev();return}if(readerPage>0){readerPage--;localStorage.setItem(`lumiere-page-${state.selected.id}`,readerPage);renderReaderPage()}};$('#nextChapter').onclick=()=>{if(readerMode==='epub'&&epubRendition){epubRendition.next();return}if(readerPage<readerPages.length-1){readerPage++;localStorage.setItem(`lumiere-page-${state.selected.id}`,readerPage);renderReaderPage()}};
-const storedTheme=localStorage.getItem('lumiere-theme');if(storedTheme==='dark'||(!storedTheme&&matchMedia('(prefers-color-scheme:dark)').matches))document.body.classList.add('dark');function syncTheme(){$('#themeBtn').textContent=document.body.classList.contains('dark')?'☀':'☾'}syncTheme();$('#themeBtn').onclick=()=>{document.body.classList.toggle('dark');localStorage.setItem('lumiere-theme',document.body.classList.contains('dark')?'dark':'light');syncTheme()};window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e});$('#installBtn').onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null}else toast('Use your browser menu to install this app')};$('#aboutBtn').onclick=()=>toast('Search curated books and the Open Library catalog');$('#helpBtn').onclick=()=>toast('Type a title, author, or keyword in the search box');document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDetails();closeReader()}});if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));renderCategories();saveState();renderBooks();scheduleOnlineSearch(true);
+const storedTheme=localStorage.getItem('lumiere-theme');if(storedTheme==='dark'||(!storedTheme&&matchMedia('(prefers-color-scheme:dark)').matches))document.body.classList.add('dark');function syncTheme(){$('#themeBtn').textContent=document.body.classList.contains('dark')?'☀':'☾'}syncTheme();$('#themeBtn').onclick=()=>{document.body.classList.toggle('dark');localStorage.setItem('lumiere-theme',document.body.classList.contains('dark')?'dark':'light');syncTheme()};window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e});$('#installBtn').onclick=async()=>{if(deferredPrompt){deferredPrompt.prompt();await deferredPrompt.userChoice;deferredPrompt=null}else toast('Use your browser menu to install this app')};$('#aboutBtn').onclick=()=>toast('Search curated books and the Open Library catalog');$('#helpBtn').onclick=()=>toast('Type a title, author, or keyword in the search box');document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeDetails();closeReader()}});if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));$('#globalEpubBtn').onclick=()=>$('#globalEpubInput').click();$('#globalEpubInput').onchange=e=>{const file=e.target.files?.[0];if(file)openLocalEpub(file)};renderCategories();saveState();renderBooks();scheduleOnlineSearch(true);
