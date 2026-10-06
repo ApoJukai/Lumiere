@@ -25,3 +25,7 @@ Run `bash tests/audit.sh`.
 ## Version 10 reader loading fix
 
 Remote EPUB files are downloaded as binary ArrayBuffers, checked for the ZIP/EPUB signature, and only then passed to epub.js. Each network request has a 25-second abort timeout and rendering has an 18-second timeout. The reader tries image and no-images editions, then shows Retry and local EPUB actions instead of loading forever.
+
+## Reading Life integration
+
+The Chapter-inspired reading dashboard is connected to the Gutenberg-backed EPUB reader. Current reads, progress, finished titles, saved titles, and annual-goal progress are stored locally and update as the EPUB rendition moves.

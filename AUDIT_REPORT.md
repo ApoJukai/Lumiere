@@ -45,3 +45,11 @@ PASS for static package, local search, routing, reader wiring, PWA shell, and Ne
 - Rendering timeout present
 - Image/no-images fallback retained
 - Permanent loading state replaced by explicit error and retry UI
+
+## Reading Life package checks
+
+- Dashboard DOM contract
+- Continue-reading controls connected to openEpub
+- Reading progress persisted from epub.js relocation events
+- Finished-book state and goal statistics persisted
+- Saved-title statistics synchronized

@@ -6,6 +6,7 @@ node --check app.js
 node --check sw.js
 node tests/core.test.js
 node tests/reader-contract.test.js
+node tests/reading-life.test.js
 test -f _redirects
 grep -q '^/gutenberg/' _redirects
 grep -q 'epubjs@0.3.93' index.html
