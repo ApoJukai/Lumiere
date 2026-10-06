@@ -21,3 +21,7 @@ Project Gutenberg identifies its collection for U.S. copyright purposes. Users s
 ## Tests
 
 Run `bash tests/audit.sh`.
+
+## Version 10 reader loading fix
+
+Remote EPUB files are downloaded as binary ArrayBuffers, checked for the ZIP/EPUB signature, and only then passed to epub.js. Each network request has a 25-second abort timeout and rendering has an 18-second timeout. The reader tries image and no-images editions, then shows Retry and local EPUB actions instead of loading forever.

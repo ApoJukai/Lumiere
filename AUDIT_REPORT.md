@@ -36,3 +36,12 @@ Static Netlify package, bundled catalog, local search, official Project Gutenber
 ## Result
 
 PASS for static package, local search, routing, reader wiring, PWA shell, and Netlify deployment structure.
+
+## Version 10 regression checks
+
+- Binary EPUB fetch path present
+- EPUB ZIP signature validation present
+- Network abort timeout present
+- Rendering timeout present
+- Image/no-images fallback retained
+- Permanent loading state replaced by explicit error and retry UI
